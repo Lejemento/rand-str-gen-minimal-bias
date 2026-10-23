@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>偏りにくいランダム文字列の作成（パスワードなど）</title>
+  <link rel="icon" href="/icon.png">
+  <style type="text/css">
+    button{font-size:100%}input[type=number]{border:1px solid #888;border-radius:.2em;font-size:100%}input[type=checkbox]{block-size:1em;inline-size:1em;font-size:90%}input[type=range]{min-width:0}textarea{box-sizing:border-box;resize:vertical;word-break:keep-all;overflow-wrap:break-word;border:1px solid #888;border-radius:.2em;width:100%;margin:.5em 0;padding:.4em;font-family:monospace;font-size:100%}body{background-color:light-dark(canvas,#222);margin:0;padding:0;font-family:sans-serif;font-size:120%}.box-root{margin:1em;@media screen and (orientation:portrait){flex-direction:column;gap:.5em;display:flex}@media screen and (orientation:landscape){grid-template-rows:repeat(1,auto);grid-template-columns:1fr 1fr;grid-auto-flow:column;gap:.5em;display:grid}&>div{flex-direction:column;gap:.5em;display:flex}}.box-head{text-align:center;word-break:keep-all;overflow-wrap:break-word;padding:.5em;&>.title{font-size:larger;font-weight:700}}.box-part{border:.2em solid rgb(from AccentColor r g b / .5);border-radius:1em;padding:.5em}.box-char{flex-wrap:wrap;justify-content:center;gap:.5em;display:flex;&>button{font-size:smaller;display:block}}.box-settings{grid-template-columns:auto 3.5em auto;gap:.2em;margin-top:.25em;display:grid;&>div{grid-column:span 3;gap:.25em;&.range{grid-template-columns:subgrid;display:grid}}}.box-gen{text-align:center;&>button{font-size:larger}}#str-warn{color:#e00}.str-credit{text-align:center;font-size:67%;&,& *{color:rgb(from CanvasText r g b / .6)}}
+  </style>
+</head>
+<body>
+  <div class="box-root">
+    <div>
+      <div class="box-head">
+        <div class="title">偏りにくい<wbr>ランダム<wbr>文字列<wbr>の<wbr>作成</div>
+        <div>
+          指定した条件で<wbr>ランダムな<wbr>文字列を<wbr>作成します。<wbr>IDや<wbr>パスワードに<wbr>お使いください。<wbr><!--
+          -->作成処理は<wbr>お使いの<wbr>デバイス上で<wbr>完結し、<wbr>暗号学的な<wbr>計算によって<wbr>行われます。
+        </div>
+      </div>
+      <div class="box-part">
+        <div>▼使用する文字</div>
+        <textarea style="height: 4em;" id="tarea-char" placeholder="255文字まで・空白文字は無視"></textarea>
+        <div class="box-char">
+          <button id="char_reset">リセット</button>
+          <button id="char_latnum">大小英数字 aA1</button>
+          <button id="char_latnuma">英数字（間違い防止）</button>
+          <button id="char_latupp">英大文字 ABC</button>
+          <button id="char_latlow">英小文字 abc</button>
+          <button id="char_num">数字 123</button>
+          <button id="char_base64">Base64</button>
+          <button id="char_jahira">ひらがな</button>
+          <button id="char_jakata">カタカナ</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="box-part">
+        <div>▼作成の設定</div>
+        <div class="box-settings">
+          <div class="range"><div>作成する数</div>
+            <input type="number" min="1" value="10" max="100" id="s-round-n"><input type="range" min="1" value="10" max="40" id="s-round-r"></div>
+          <div class="range"><div>文字数</div>
+            <input type="number" min="4" value="16" max="64" id="s-len-n"><input type="range" min="4" value="16" max="32" id="s-len-r"></div>
+          <div class="range"><div>偏りにくさ</div>
+            <input type="number" min="0" value="1" max="3" id="s-rare-n"><input type="range" min="0" value="1" max="3" id="s-rare-r"></div>
+          <div>結果を上書きしない<input type="checkbox" id="s-notow"></div>
+          <div>結果をスペースで区切る<input type="checkbox" id="s-space"></div>
+        </div>
+      </div>
+      <div class="box-gen">
+        <button id="button-gen">作成する</button>
+      </div>
+      <div class="box-part">
+        <div>▼作成結果</div>
+        <div id="str-warn"></div>
+        <textarea style="height: 11em;" id="tarea-result"></textarea>
+      </div>
+      <div class="str-credit">
+        制作：<a target="_blank" href="https://www.nicovideo.jp/user/32513714">レジェメント</a>
+      </div>
+    </div>
+  </div>
+  <script>
+const t=document.getElementById("tarea-char"),R="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",U="ABCDEFGHIJKLMNOPQRSTUVWXYZ",x="abcdefghijklmnopqrstuvwxyz",G="0123456789",S="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",W="あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん",j="アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";document.getElementById("char_reset").onclick=()=>{t.value=""},document.getElementById("char_latnum").onclick=()=>{t.value+=R},document.getElementById("char_latnuma").onclick=()=>{t.value+=A},document.getElementById("char_latupp").onclick=()=>{t.value+=U},document.getElementById("char_latlow").onclick=()=>{t.value+=x},document.getElementById("char_num").onclick=()=>{t.value+=G},document.getElementById("char_base64").onclick=()=>{t.value+=S},document.getElementById("char_jahira").onclick=()=>{t.value+=W},document.getElementById("char_jakata").onclick=()=>{t.value+=j};const E=(m,l=null,a=null,n=null)=>{let e=Number(m);return n!==null&&(n<1?e=Math.round(e/n)/(1/n):1<n?e=Math.round(e/n)*n:e=Math.round(e)),l!==null&&e<l?e=l:a!==null&&a<e&&(e=a),e+""},c=document.getElementById("s-round-n"),_=document.getElementById("s-round-r"),u=document.getElementById("s-len-n"),v=document.getElementById("s-len-r"),o=document.getElementById("s-rare-n"),B=document.getElementById("s-rare-r");c.onchange=()=>{_.value=c.value=E(c.value,1,100,1)},_.oninput=()=>{c.value=_.value},u.onchange=()=>{v.value=u.value=E(u.value,4,64,1)},v.oninput=()=>{u.value=v.value},o.onchange=()=>{B.value=o.value=E(o.value,0,3,1)},B.oninput=()=>{o.value=B.value};const z=document.getElementById("s-notow"),D=document.getElementById("s-space"),k=document.getElementById("str-warn"),b=document.getElementById("tarea-result"),J=new Intl.Segmenter(void 0,{granularity:"grapheme"});document.getElementById("button-gen").onclick=()=>{const m=t.value.replace(/\s/g,""),l=new Set;for(const s of J.segment(m))if(l.add(s.segment),255<=l.size)break;if(l.size===0){k.innerText="使用する文字が追加されていません。";return}else k.innerText="";const a=Number(c.value),n=Number(u.value),e=Number(o.value),w=BigInt(e),y=BigInt(2**e)**BigInt(n),N=BigInt(y)*BigInt(l.size),d=[],T=new Uint32Array(n);for(let s=0;s<a;s++){const g=new Map;for(const I of l)g.set(I,y);let p=N,f="";crypto.getRandomValues(T);for(const I of T){const L=p*BigInt(I)/4294967296n;let h=0n;for(const[M,r]of g){if(h<=L&&L<h+r){const H=r>>w;g.set(M,H),p-=r-H,f+=M;break}h+=r}}d.push(f)}const i=D.checked?" ":`
+`;z.checked?b.value+=i+d.join(i):b.value=d.join(i)};
+  </script>
+</body>
+</html>
